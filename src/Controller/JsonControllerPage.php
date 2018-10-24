@@ -20,6 +20,7 @@ class JsonControllerPage extends ControllerBase {
    * @var \Drupal\Core\Config\ConfigFactory
    */
   protected $configFactory;
+
   /**
    * The entity type manager.
    *
@@ -30,13 +31,13 @@ class JsonControllerPage extends ControllerBase {
   /**
    * Constructs a JsonControllerPage.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-   *   The entity type manager service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
    */
   public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
-    $this->configFactory = $config_factory;    
+    $this->configFactory = $config_factory;
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -50,7 +51,15 @@ class JsonControllerPage extends ControllerBase {
     );
   }
 
-  public function get_page_json_data($siteapikey, $nid) {
+  /**
+   * Function getPageJsonData.
+   *
+   * @param string $siteapikey
+   *   The siteapikey.
+   * @param int $nid
+   *   The Node ID.
+   */
+  public function getPageJsonData($siteapikey, $nid) {
     if (!empty($nid)) {
       $node_storage = $this->entityTypeManager->getStorage('node');
       $node = $node_storage->load($nid)->toArray();
@@ -69,12 +78,12 @@ class JsonControllerPage extends ControllerBase {
       $node_storage = $this->entityTypeManager->getStorage('node');
       $node = $node_storage->load($nid);
       if ($storedKey == 'No API Key yet' || $storedKey != $siteapikey || !is_numeric($nid) || $node->getType() != 'page') {
-        // Return 403 Access Denied page.  
+        // Return 403 Access Denied page.
         return AccessResult::forbidden();
       }
     }
+    // Success result.
     return AccessResult::allowed();
   }
 
 }
-

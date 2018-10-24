@@ -1,7 +1,7 @@
 site_api.page_json:
   path: '/page_json/{siteapikey}/{nid}'
   defaults:
-    _controller: '\Drupal\site_api\Controller\JsonControllerPage::get_page_json_data'
+    _controller: '\Drupal\site_api\Controller\JsonControllerPage::getPageJsonData'
     _title: 'Page Json'
   requirements:
     _custom_access: '\Drupal\site_api\Controller\JsonControllerPage::access'

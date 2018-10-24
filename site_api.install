@@ -11,6 +11,16 @@
 function site_api_install() {
   // Update the siteapikey with default value.
   $site = \Drupal::configFactory()->getEditable('system.site');
-  $site->set('siteapikey', 'Not a valid key');
+  $site->set('siteapikey', 'No API Key yet');
   $site->save(TRUE);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function site_api_uninstall() {
+  // Delete the siteapikey config values.
+  $site = \Drupal::configFactory()->getEditable('system.site');
+  $site->clear('siteapikey');
+  $site->save();
 }

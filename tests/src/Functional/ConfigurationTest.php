@@ -14,14 +14,21 @@ class ConfigurationTest extends BrowserTestBase {
   protected $strictConfigSchema = FALSE;
 
   /**
+   * The path to a node that is created for testing.
+   *
+   * @var string
+   */
+  protected $nodePath;
+
+  /**
    * Modules to enable.
    *
    * @var array
    */
   public static $modules = [
-    'system',
     'user',
     'site_api',
+    'node',
   ];
 
   /**
@@ -29,30 +36,33 @@ class ConfigurationTest extends BrowserTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $user = $this->drupalCreateUser(['administer site configuration']);
-    $this->drupalLogin($user);
+    $this->drupalLogin($this->drupalCreateUser(
+      [
+        'access administration pages',
+        'administer site configuration',
+      ]
+    ));
+    $this->drupalCreateContentType(['type' => 'page']);
+    $this->nodePath = "node/" . $this->drupalCreateNode(['promote' => 1])->id();
   }
 
   /**
    * Test site information form site api field.
    */
   public function testFieldSettingsForm() {
+    $this->drupalGet('admin/config/system/site-information');
+    $this->assertFieldById('edit-siteapikey', 'No API Key yet');
     $edit = [
       'siteapikey' => 'FOOBAR12345',
+      'site_frontpage' => '/' . $this->nodePath,
     ];
-    $this->drupalPostForm('system/site-information', $edit, t('Save configuration'));
-    $this->assertText(t('The configuration options have been saved.'), 'Configuration options have been saved');
-  }
+    $this->drupalPostForm(NULL, $edit, t('Save configuration'));
+    $this->assertText(t('The configuration options have been saved.'), 'The Site API Key has been saved to @siteapi.', [@siteapi => $edit['siteapikey']]);
 
-  /**
-   * Test site information form site api field after adding the value.
-   */
-  public function testFieldSettingsFormupdate() {
-    $edit = [
-      'siteapikey' => 'FOOBAR123456',
-    ];
-    $this->drupalPostForm('system/site-information', $edit, t('Update configuration'));
-    $this->assertText(t('The configuration options have been saved.'), 'Configuration options have been saved');
+    // After adding the value update the field.
+    $edit['siteapikey'] = 'FOOBAR123456';
+    $this->drupalPostForm(NULL, $edit, t('Update configuration'));
+    $this->assertText(t('The configuration options have been saved.'), 'The Site API Key has been saved to @siteapi.', [@siteapi => $edit['siteapikey']]);
   }
 
 }
