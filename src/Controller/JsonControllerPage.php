@@ -3,6 +3,7 @@
 namespace Drupal\site_api\Controller;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -14,6 +15,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class JsonControllerPage extends ControllerBase {
 
   /**
+   * Configuration Factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactory
+   */
+  protected $configFactory;
+  /**
    * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -23,10 +30,13 @@ class JsonControllerPage extends ControllerBase {
   /**
    * Constructs a JsonControllerPage.
    *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The entity type manager service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
+    $this->configFactory = $config_factory;    
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -35,6 +45,7 @@ class JsonControllerPage extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
+      $container->get('config.factory'),
       $container->get('entity_type.manager')
     );
   }
@@ -52,7 +63,7 @@ class JsonControllerPage extends ControllerBase {
    * Checks access for this controller.
    */
   public function access($siteapikey, $nid) {
-    $config = \Drupal::config('system.site');
+    $config = $this->configFactory->get('system.site');
     $storedKey = $config->get('siteapikey');
     if (!empty($nid)) {
       $node_storage = $this->entityTypeManager->getStorage('node');
@@ -66,3 +77,4 @@ class JsonControllerPage extends ControllerBase {
   }
 
 }
+

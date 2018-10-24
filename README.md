@@ -1,6 +1,6 @@
 # site_api
 
-# Create a custom Drupal 8 module
+# Drupal 8 module creation
 
 ## Background Information
 

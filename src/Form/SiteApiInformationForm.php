@@ -48,7 +48,7 @@ class SiteApiInformationForm extends SiteInformationForm {
     // so that they are also saved.
     parent::submitForm($form, $form_state);
 
-    if ($form_state->getValue('siteapikey') != "No API Key yet") {
+    if (!empty($form_state->getValue('siteapikey')) && $form_state->getValue('siteapikey') != "No API Key yet") {
       drupal_set_message($this->t('The Site API Key has been saved to @siteapikey', array('@siteapikey' => $form_state->getValue('siteapikey'))), 'status');
     }
   }
