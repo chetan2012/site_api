@@ -20,3 +20,11 @@ This module needs to alter the existing Drupal "Site Information" form. Specific
 ## Example URL
 
 http://localhost/page_json/FOOBAR12345/17
+
+## Test Evaluation
+
+* Meeting above requirements
+* Utilising Drupal-specific solutions (hooks, APIs, etc.))
+* Readability of code
+* Clear, concise commenting
+* List of resources used if any (Internet sites, books, previous knowledge) Total time to complete task.
