@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Main module file.
+ */
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function site_api_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.site_api':
+      $output = '';
+      $output .= '<p>' . t('A new form text field named "Site API Key" needs to be added to the "Site Information" form with the default value of "No API Key yet".') . '</p>';
+      $output .= '<p>' . t('When this form is submitted, the value that the user entered for this field should be saved as the system variable named "siteapikey".') . '</p>';
+      $output .= '<p>' . t('A Drupal message should inform the user that the Site API Key has been saved with that value.') . '</p>';
+      $output .= '<p>' . t('When this form is visited after the "Site API Key" is saved, the field should be populated with the correct value.') . '</p>';
+      $output .= '<p>' . t('The text of the "Save configuration" button should change to "Update Configuration".') . '</p>';
+      $output .= '<p>' . t('This module also provides a URL that responds with a JSON representation of a given node with the content type "page" only if the previously submitted API Key and a node id (nid) of an appropriate node are present, otherwise it will respond with "access denied".') . '</p>';
+      return $output;
+  }
+}

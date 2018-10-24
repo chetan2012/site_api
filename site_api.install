@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the site_api module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function site_api_install() {
+  // Update the siteapikey with default value.
+  $site = \Drupal::configFactory()->getEditable('system.site');
+  $site->set('siteapikey', 'Not a valid key');
+  $site->save(TRUE);
+}
