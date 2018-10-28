@@ -21,6 +21,13 @@ class ConfigurationTest extends BrowserTestBase {
   protected $nodePath;
 
   /**
+   * The id to a node that is created for testing.
+   *
+   * @var int
+   */
+  protected $nodeid;
+
+  /**
    * Modules to enable.
    *
    * @var array
@@ -43,7 +50,8 @@ class ConfigurationTest extends BrowserTestBase {
       ]
     ));
     $this->drupalCreateContentType(['type' => 'page']);
-    $this->nodePath = "node/" . $this->drupalCreateNode(['promote' => 1])->id();
+    $this->nodeid = $this->drupalCreateNode(['promote' => 1])->id();
+    $this->nodePath = "node/" . $this->nodeid;
   }
 
   /**
@@ -52,17 +60,33 @@ class ConfigurationTest extends BrowserTestBase {
   public function testFieldSettingsForm() {
     $this->drupalGet('admin/config/system/site-information');
     $this->assertFieldById('edit-siteapikey', 'No API Key yet');
-    $edit = [
+    $edit_save = [
       'siteapikey' => 'FOOBAR12345',
       'site_frontpage' => '/' . $this->nodePath,
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save configuration'));
-    $this->assertText(t('The configuration options have been saved.'), 'The Site API Key has been saved to @siteapi.', [@siteapi => $edit['siteapikey']]);
+    $this->drupalPostForm(NULL, $edit_save, t('Save configuration'));
+    $this->assertText(t('The configuration options have been saved.'), 'The Site API Key has been saved to @siteapi.', [@siteapi => $edit_save['siteapikey']]);
 
     // After adding the value update the field.
-    $edit['siteapikey'] = 'FOOBAR123456';
-    $this->drupalPostForm(NULL, $edit, t('Update configuration'));
-    $this->assertText(t('The configuration options have been saved.'), 'The Site API Key has been saved to @siteapi.', [@siteapi => $edit['siteapikey']]);
+    $edit_update['siteapikey'] = 'FOOBAR123456';
+    $this->drupalPostForm(NULL, $edit_update, t('Update configuration'));
+    $this->assertText(t('The configuration options have been saved.'), 'The Site API Key has been saved to @siteapi.', [@siteapi => $edit_update['siteapikey']]);
+
+    // Check the json page is exist with 403 response.
+    $this->drupalGet('page_json/' . $edit_save['siteapikey'] . '/' . $this->nodeid);
+    $this->assertText(t('Access denied'));
+    $this->assertResponse(403);
+
+    // Check the json page is exist with 200 response.
+    $this->drupalGet('page_json/' . $edit_update['siteapikey'] . '/' . $this->nodeid);
+    $this->assertResponse(200);
+
+    // Logout and check that the configuration page is showing default 
+	// 403 pages.
+    $this->drupalLogout();
+    $this->drupalGet('admin/config/system/site-information');
+    $this->assertText(t('Access denied'));
+    $this->assertResponse(403);
   }
 
 }
